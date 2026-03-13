@@ -11,6 +11,5 @@ aplicaçao para controle de compras em tempo real.
 
 - Node.JS
 - Express
-- PostgreSQL
 - HTML / CSS / JS
 
