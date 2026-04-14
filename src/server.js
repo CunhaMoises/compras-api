@@ -1,8 +1,7 @@
-const express = require('express')
-
-const app = express ();
+const app = require('./app.js')
 
 const port = process.env.PORT || 8080;
+require('./services/comprasService.js')
 
 app.get('/',(req,res) => {
     res.send('hello world')
