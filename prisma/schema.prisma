@@ -9,12 +9,25 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
+  url      = env("DATABASE_URL")
 }
 
-model User {
+model carrinho {
+  id String @id @default(uuid())
+  idUser String
+  status String @default("ativo")
+  total Float @default(0)
+  createdAt DateTime @default(now())
+
+  itens itens_carrinho []
+}
+
+model itens_carrinho {
   id String @id @default(uuid())
   nome String
-  sobrenome String?
-  idade Int
+  preco Float?
+  quantidade Int?
+
+  carrinho_id String
+  carrinho carrinho @relation(fields: [carrinho_id], references: [id])
 }
