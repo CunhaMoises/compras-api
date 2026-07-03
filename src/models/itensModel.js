@@ -15,7 +15,15 @@ async function create_item (carrinho_id, data) {
     })
 }
 
+async function remove_item (id){
+    return await prisma.itens_carrinho.delete({
+        where: {
+            id
+        }
+    })
+}
 
 module.exports = {
-    create_item
+    create_item,
+    remove_item
 }

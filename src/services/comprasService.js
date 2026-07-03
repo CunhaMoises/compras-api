@@ -25,6 +25,17 @@ async function criar_item (idUser, data) {
     return item
 }
 
+async function remover_item(idUser, id) {
+
+    let carrinho = await carrinho_model.find_carrinho(idUser)
+    
+    let item = await itens_model.remove_item(id)
+    let total = carrinho.total - (item.preco * item.quantidade)
+
+    carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
+}
+
 module.exports = {
-    criar_item
+    criar_item,
+    remover_item
 }

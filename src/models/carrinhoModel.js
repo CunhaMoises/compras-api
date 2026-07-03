@@ -12,12 +12,11 @@ async function create_carrinho (idUser) {
 }
 
 // procurar carrinho
-async function find_carrinho (idUser, total) {
+async function find_carrinho (idUser) {
     return await prisma.carrinho.findFirst ( {
         where:{
             idUser,
             status: "ativo",
-            total
         }
     })
 }
