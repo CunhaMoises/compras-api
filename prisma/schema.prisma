@@ -25,8 +25,8 @@ model carrinho {
 model itens_carrinho {
   id String @id @default(uuid())
   nome String
-  preco Float?
-  quantidade Int?
+  preco Float
+  quantidade Int
 
   carrinho_id String
   carrinho carrinho @relation(fields: [carrinho_id], references: [id])

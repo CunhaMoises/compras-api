@@ -35,7 +35,17 @@ async function remover_item(idUser, id) {
     carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
 }
 
+async function finalizar_carrinho (idUser) {
+    let carrinho = await carrinho_model.find_carrinho(idUser)
+
+    carrinho = await carrinho_model.finish_carrinho(carrinho.id)
+
+    return carrinho
+
+}
+
 module.exports = {
     criar_item,
-    remover_item
+    remover_item,
+    finalizar_carrinho
 }

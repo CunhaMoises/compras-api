@@ -33,8 +33,23 @@ async function update_carrinho (id, total) {
     })
 }
 
+// finalizar carrinho
+async function finish_carrinho (id){
+    return await prisma.carrinho.update ({
+        where:{
+            id,
+            status: "ativo"
+        },
+        data: {
+            status: "finalizado"
+        }
+    })
+
+}
+
 module.exports = {
     create_carrinho,
     find_carrinho,
-    update_carrinho
+    update_carrinho,
+    finish_carrinho
 }
