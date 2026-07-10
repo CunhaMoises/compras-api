@@ -7,10 +7,17 @@
 const itens_model = require('../models/itensModel')
 const carrinho_model = require('../models/carrinhoModel')
 
+const TOTAL_CARRINHO_MAXIMO = 5
 
 async function criar_item (idUser, data) {
 
-    
+    quantidade_carrinho = await carrinho_model.count_carrinho(idUser)
+
+    if(quantidade_carrinho >= TOTAL_CARRINHO_MAXIMO) {
+        throw new Error("limite máximo de carrinhos atigindo, exclua 1 para poder criar.");
+        
+    }
+
     let carrinho = await carrinho_model.find_carrinho (idUser)
     
     if (!carrinho) {
@@ -21,7 +28,7 @@ async function criar_item (idUser, data) {
     let total = carrinho.total + (item.preco * item.quantidade)
 
     carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
-    
+
     return item
 }
 

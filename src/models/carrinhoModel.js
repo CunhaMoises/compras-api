@@ -44,12 +44,22 @@ async function finish_carrinho (id){
             status: "finalizado"
         }
     })
+}
 
+// conta quantos carrinhos tem
+async function count_carrinho(idUser){
+    return await prisma.carrinho.count({
+        where: {
+            idUser,
+            status: "finalizado"
+        }
+    })
 }
 
 module.exports = {
     create_carrinho,
     find_carrinho,
     update_carrinho,
-    finish_carrinho
+    finish_carrinho,
+    count_carrinho
 }

@@ -29,5 +29,5 @@ model itens_carrinho {
   quantidade Int
 
   carrinho_id String
-  carrinho carrinho @relation(fields: [carrinho_id], references: [id])
+  carrinho carrinho @relation(fields: [carrinho_id], references: [id], onDelete: Cascade)
 }
