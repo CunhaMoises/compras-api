@@ -30,10 +30,17 @@ async function remover_item(idUser, id) {
     let carrinho = await carrinho_model.find_carrinho(idUser)
     let item = await itens_model.find_item(id)
 
-    let total = carrinho.total - (item.preco * item.quantidade)
+    let total_item = item.preco * item.quantidade
+
+    if(item.carrinho_id !== carrinho.id) {
+        throw new Error("item não encontrado no carrinho");
+        
+    } else {
+        item = await itens_model.remove_item(id)
+        let total = carrinho.total - total_item
+        carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
+    }
     
-    carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
-    item = await itens_model.remove_item(id)
 }
 
 async function finalizar_carrinho (idUser) {
