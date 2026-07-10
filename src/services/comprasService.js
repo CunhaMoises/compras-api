@@ -28,11 +28,12 @@ async function criar_item (idUser, data) {
 async function remover_item(idUser, id) {
 
     let carrinho = await carrinho_model.find_carrinho(idUser)
-    
-    let item = await itens_model.remove_item(id)
-    let total = carrinho.total - (item.preco * item.quantidade)
+    let item = await itens_model.find_item(id)
 
+    let total = carrinho.total - (item.preco * item.quantidade)
+    
     carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
+    item = await itens_model.remove_item(id)
 }
 
 async function finalizar_carrinho (idUser) {

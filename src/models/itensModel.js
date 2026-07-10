@@ -15,6 +15,17 @@ async function create_item (carrinho_id, data) {
     })
 }
 
+// procura o item
+async function find_item (id) {
+    return await prisma.itens_carrinho.findFirst ({
+        where: {
+            id  
+        } 
+    })
+
+}
+
+// remove o item
 async function remove_item (id){
     return await prisma.itens_carrinho.delete({
         where: {
@@ -25,5 +36,6 @@ async function remove_item (id){
 
 module.exports = {
     create_item,
+    find_item,
     remove_item
 }

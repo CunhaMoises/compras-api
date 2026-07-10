@@ -17,7 +17,7 @@ async function remove_items (req,res) {
     try {
         const idUser = req.headers["x-user-id"]
         const item = await service.remover_item(idUser, idItem)
-        return res.status(204).json({status: 'o item foi removido com sucesso!'})
+        return res.status(200).json({status: 'o item foi removido com sucesso!'})
     } catch (error) {
         return res.status(500).json({erro: error.message})
         
