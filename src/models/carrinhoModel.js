@@ -11,12 +11,21 @@ async function create_carrinho (idUser) {
     })
 }
 
-// procurar carrinho
-async function find_carrinho (idUser) {
+// procurar carrinho ativo
+async function find_carrinho_ativo (idUser) {
     return await prisma.carrinho.findFirst ( {
         where:{
             idUser,
             status: "ativo",
+        }
+    })
+}
+
+// procurar carrinho
+async function find_carrinho (id) {
+    return await prisma.carrinho.findUnique ( {
+        where: {
+            id
         }
     })
 }
@@ -46,6 +55,37 @@ async function finish_carrinho (id){
     })
 }
 
+// listar carrinho
+async function list_carrinho (idUser) {
+    return await prisma.carrinho.findMany ({
+        where: {
+            idUser
+        }, include : {
+            itens: true
+        }
+    })
+}
+
+// listar item do carrinho
+async function list_items (id) {
+    return await prisma.carrinho.findUnique ({
+        where: {
+            id
+        }, include: {
+            itens: true
+        }
+    })
+}
+
+// remover carrinho
+async function remove_carrinho(id) {
+    return await prisma.carrinho.delete ({
+        where: {
+            id
+        }
+    })
+}
+
 // conta quantos carrinhos tem
 async function count_carrinho(idUser){
     return await prisma.carrinho.count({
@@ -56,10 +96,16 @@ async function count_carrinho(idUser){
     })
 }
 
+
+
 module.exports = {
     create_carrinho,
+    find_carrinho_ativo,
     find_carrinho,
     update_carrinho,
     finish_carrinho,
+    list_carrinho,
+    list_items,
+    remove_carrinho,
     count_carrinho
 }
