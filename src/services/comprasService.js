@@ -8,6 +8,7 @@
 // exclui carrinho
 const itens_model = require('../models/itensModel')
 const carrinho_model = require('../models/carrinhoModel')
+const AppError = require('../errors/AppError')
 
 const TOTAL_CARRINHO_MAXIMO = 5
 
@@ -16,7 +17,10 @@ async function criar_item (idUser, data) {
     quantidade_carrinho = await carrinho_model.count_carrinho(idUser)
 
     if(quantidade_carrinho >= TOTAL_CARRINHO_MAXIMO) {
-        throw new Error("limite máximo de carrinhos atigindo, exclua 1 carrinho do seu histórico para poder criar.");
+        throw new AppError(
+            "Limite de 5 carrinhos finalizados atingido. Exclua um carrinho para criar outro.",
+            409
+        );
         
     }
 
@@ -40,17 +44,17 @@ async function remover_item(idUser, id) {
     let item = await itens_model.find_item(id)
 
     if (!carrinho) {
-        throw new Error ('carrinho não encontrado')
+        throw new AppError ('Carrinho não encontrado', 404)
     }
 
     if(!item) {
-        throw new Error ('item não encontrado')
+        throw new Error ('Item não encontrado', 404)
     }
 
     let total_item = item.preco * item.quantidade
 
     if(item.carrinho_id !== carrinho.id) {
-        throw new Error("item não encontrado no carrinho");
+        throw new AppError("Item não encontrado no carrinho", 404);
     }
 
     item = await itens_model.remove_item(id)
@@ -64,7 +68,7 @@ async function finalizar_carrinho (idUser) {
     let carrinho = await carrinho_model.find_carrinho_ativo (idUser)
     
     if (!carrinho) {
-        throw new Error ('carrinho não encontrado')
+        throw new AppError ('Carrinho não encontrado', 404)
     }
 
     return carrinho = await carrinho_model.finish_carrinho(carrinho.id)
@@ -75,7 +79,7 @@ async function mostrar_carrinho (idUser) {
     let carrinho = await carrinho_model.list_carrinho(idUser)
 
     if (!carrinho.length) {
-        throw new Error ('Carrinho não encontrado')
+        throw new AppError ('Carrinho não encontrado', 404)
     }
 
     return carrinho
@@ -86,7 +90,7 @@ async function mostrar_item (idUser, id) {
     let user = idUser
 
     if( user !== carrinho.idUser) {
-        throw new Error ('carrinho não econtrado')
+        throw new AppError ('Carrinho não econtrado', 404)
     } else {
         carrinho = await carrinho_model.list_items(id)
     }
@@ -99,7 +103,7 @@ async function remover_carrinho (idUser, id) {
     let user = idUser
 
     if (user !== carrinho.idUser) {
-        throw new Error ('carrinho não encontrado')
+        throw new AppError ('Carrinho não encontrado', 404)
     } else {
         carrinho = await carrinho_model.remove_carrinho(id)
     }
