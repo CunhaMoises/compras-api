@@ -62,9 +62,8 @@ async function finish_car (req, res) {
 
 async function find_car (req, res) {
     try {
-        const idUser = req.headers["x-user-id"] 
-        const idCar = req.params.id
-        const carrinho = await service.procurar_carrinho(idUser,idCar)
+        const idUser = req.headers["x-user-id"]
+        const carrinho = await service.procurar_carrinho(idUser)
         return res.status(200).json(carrinho)
 
     } catch (error) {
