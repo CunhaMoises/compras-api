@@ -17,6 +17,8 @@ async function find_carrinho_ativo (idUser) {
         where:{
             idUser,
             status: "ativo",
+        }, include : {
+            itens : true
         }
     })
 }
