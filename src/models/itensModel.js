@@ -33,9 +33,18 @@ async function remove_item (id){
         }
     })
 }
+// remove todos os itens do carrinho
+async function clear_car (id) {
+    return await prisma.itens_carrinho.deleteMany ({
+        where: {
+            carrinho_id : id
+        }
+    })
+}
 
 module.exports = {
     create_item,
     find_item,
-    remove_item
+    remove_item,
+    clear_car
 }

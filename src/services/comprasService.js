@@ -108,6 +108,20 @@ async function mostrar_item (idUser, id) {
     return carrinho
 }
 
+async function limpar_carrinho (idUser) {
+    const carrinho = await carrinho_model.find_carrinho_ativo(idUser)
+
+    if (!carrinho) {
+        throw new AppError ('Carrinho não encontrado', 404)
+    }
+
+    await itens_model.clear_car(carrinho.id)
+
+    const vazio = await carrinho_model.find_carrinho_ativo(idUser)
+    
+    return vazio
+}
+
 async function remover_carrinho (idUser, id) {
     let carrinho = await carrinho_model.find_carrinho(id)
     let user = idUser
@@ -126,5 +140,6 @@ module.exports = {
     procurar_carrinho,
     mostrar_carrinho,
     mostrar_item,
+    limpar_carrinho,
     remover_carrinho
 }
