@@ -118,6 +118,26 @@ async function list_items (req, res) {
     }
 }
 
+async function clear_car (req, res) {
+    try {
+        const idUser = req.headers["x-user-id"]
+        const carrinho = await service.limpar_carrinho(idUser)
+        return res.status(200).json(carrinho)
+
+    }catch (error) {
+
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                erro: error.message
+            });
+        }
+
+        return res.status(500).json({
+            erro: "Erro interno do servidor"
+        });
+    }
+}
+
 async function remove_car (req, res) {
     try {
         const id = req.params.id
@@ -145,5 +165,6 @@ module.exports = {
     find_car,
     list_car,
     list_items,
+    clear_car,
     remove_car
 }
