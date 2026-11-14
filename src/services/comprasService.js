@@ -12,6 +12,31 @@ const AppError = require('../errors/AppError')
 
 const TOTAL_CARRINHO_MAXIMO = 5
 
+async function criar_usuario (data) {
+
+    try {
+        const usuario = await itens_model.create_user (data)
+ 
+        
+        let carrinho = await carrinho_model.find_carrinho_ativo(usuario.id)
+
+        if(!carrinho) {
+            carrinho = await carrinho_model.create_carrinho(usuario.id)
+        }
+        
+        return usuario
+        
+    } catch (error) {
+        if(error.code == 'P2002') {
+            throw new AppError('email ja cadastrado!')
+        }
+
+        throw error
+        
+    }
+    
+}
+
 async function criar_item (idUser, data) {
 
     quantidade_carrinho = await carrinho_model.count_carrinho(idUser)
@@ -136,6 +161,7 @@ async function remover_carrinho (idUser, id) {
    
 }
 module.exports = {
+    criar_usuario,
     criar_item,
     remover_item,
     finalizar_carrinho,

@@ -1,6 +1,21 @@
 const service = require('../services/comprasService')
 
 
+async function create_user (req,res) {
+    try {
+        
+        const usuario = await service.criar_usuario(req.body)
+        return res.status(201).json(usuario)
+        
+    } catch (error) {
+        if(error.statusCode) {
+            return res.status(error.statusCode).json({erro:error.message})
+        }
+        return res.status(500).json({"erro":error.message})
+        
+    }
+}
+
 async function create_items (req,res) {
     try{
         const idUser = req.headers["x-user-id"]
@@ -159,6 +174,7 @@ async function remove_car (req, res) {
 }
 
 module.exports = {
+    create_user,
     create_items,
     remove_items,
     finish_car,
