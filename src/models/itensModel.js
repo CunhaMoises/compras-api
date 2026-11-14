@@ -2,29 +2,6 @@ const {PrismaClient} = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-// cria o usuario
-async function create_user(data) {
-    return await prisma.usuario.create({
-        data: {
-            nome: data.nome,
-            email: data.email,
-            senha: data.senha
-        }
-
-    })
-
-   
-}
-
-// buscar usuario
-async function find_user () {
-    return prisma.usuario.findMany({
-        select: {
-            email:true
-        }
-    })
-}
-
 
 // cria o item
 async function create_item (carrinho_id, data) {
@@ -66,8 +43,6 @@ async function clear_car (id) {
 }
 
 module.exports = {
-    create_user,
-    find_user,
     create_item,
     find_item,
     remove_item,

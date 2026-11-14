@@ -3,28 +3,25 @@ const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
 
 // criar o carrinho
-async function create_carrinho (usuario_id) {
+async function create_carrinho (idUser) {
     return await prisma.carrinho.create({
         data: {
-            usuario_id
+            idUser
         }
     })
 }
 
 // procurar carrinho ativo
-async function find_carrinho_ativo (usuario_id) {
+async function find_carrinho_ativo (idUser) {
     return await prisma.carrinho.findFirst ( {
         where:{
-            usuario_id,
+            idUser,
             status: "ativo",
         }, include : {
             itens : true
         }
     })
 }
-
-
-
 
 // procurar carrinho
 async function find_carrinho (id) {

@@ -10,5 +10,8 @@ app.use(cors())
 
 app.use('/api', router)
 
+app.get('/', (req,res)=> {
+    res.send('hello world')
+})
 
 module.exports = app
