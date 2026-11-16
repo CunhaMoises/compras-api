@@ -12,6 +12,19 @@ async function crate_user(data, hash) {
     })
 }
 
+async function login (email) {
+    return await prisma.usuarios.findUnique({
+        where: {
+            email: email
+        },
+        select: {
+            email: true,
+            senha: true
+        }
+    })
+}
+
 module.exports = {
-    crate_user
+    crate_user,
+    login
 }

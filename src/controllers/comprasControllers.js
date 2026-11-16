@@ -12,10 +12,27 @@ async function crate_user (req,res) {
                 erro: error.message
             })
         }
-        
-        return res.status(500).json({erro: error})
+
+        return res.status(500).json({erro: error.message})
     }
 }
+
+async function login (req,res) {
+    try {
+        const usuario = await service.login(req.body)
+
+        return res.status(200).json(usuario)
+    } catch (error) {
+        
+        if(error.statusCode) {
+            return res.status(error.statusCode).json({
+                erro: error.message
+            })
+        }
+        return res.status(500).json({erro: error.message})
+    }
+}
+
 async function create_items (req,res) {
     try{
         const item = await service.create_items (idUser, req.body)
@@ -174,6 +191,7 @@ async function remove_car (req, res) {
 
 module.exports = {
     crate_user,
+    login,
     create_items,
     remove_items,
     finish_car,

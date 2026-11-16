@@ -40,6 +40,24 @@ async function create_user (data) {
     
 }
 
+async function login (data) {
+    
+    const usuario = await usuarios_model.login(data.email)
+
+    if(!usuario) {
+        throw new AppError('Usuario não encontrado!', 400)
+    }
+
+    const senha  = await bcrypt.compare(data.senha, usuario.senha)
+
+    if(senha == false) {
+        throw new AppError('Usuario ou senha inválidos!', 400)
+    }
+
+    return usuario
+
+}
+
 async function create_items (usuario_id, data) {
 
     quantidade_carrinho = await carrinhos_model.count_carrinho(usuario_id)
@@ -163,7 +181,9 @@ async function remove_car (usuario_id, id) {
     }
    
 }
+
 module.exports = {
+    login,
     create_user,
     create_items,
     remove_items,
