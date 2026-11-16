@@ -7,14 +7,42 @@
 // mostra os itens de um carrinho
 // exclui carrinho
 const itens_model = require('../models/itensModel')
-const carrinho_model = require('../models/carrinhoModel')
+const carrinhos_model = require('../models/carrinhosModel')
+const usuarios_model = require('../models/usuariosModel')
+const bcrypt = require('bcrypt')
 const AppError = require('../errors/AppError')
 
 const TOTAL_CARRINHO_MAXIMO = 5
 
-async function criar_item (idUser, data) {
+async function create_user (data) {
+    try {
 
-    quantidade_carrinho = await carrinho_model.count_carrinho(idUser)
+        if(!data.nome?.trim() || !data.email?.trim() || !data.senha?.trim()) {
+            throw new AppError('Preencha os campos corretamente!', 400)
+        }
+
+        const hash = await bcrypt.hash(data.senha, 10)
+        const usuario = await usuarios_model.crate_user(data, hash)
+
+        
+        const carrinho = await carrinhos_model.create_carrinho(usuario.id)
+        
+
+        return usuario
+
+    } catch (error) {
+        if(error.code == 'P2002') {
+            throw new AppError ('email ja cadastrado!', 400)
+        }
+        
+        throw error
+    }
+    
+}
+
+async function create_items (usuario_id, data) {
+
+    quantidade_carrinho = await carrinhos_model.count_carrinho(usuario_id)
 
     if(quantidade_carrinho >= TOTAL_CARRINHO_MAXIMO) {
         throw new AppError(
@@ -24,23 +52,23 @@ async function criar_item (idUser, data) {
         
     }
 
-    let carrinho = await carrinho_model.find_carrinho_ativo (idUser)
+    let carrinho = await carrinhos_model.find_carrinho_ativo (usuario_id)
     
     if (!carrinho) {
-        carrinho = await carrinho_model.create_carrinho (idUser)
+        carrinho = await carrinhos_model.create_carrinho (usuario_id)
     }
     
-    const item = await itens_model.create_item(carrinho.id, data)
+    const item = await itens_model.create_items(carrinho.id, data)
     let total = carrinho.total + (item.preco * item.quantidade)
 
-    carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
+    carrinho = await carrinhos_model.update_carrinho(carrinho.id, total)
 
     return item
 }
 
-async function remover_item(idUser, id) {
+async function remove_items(usuario_id, id) {
 
-    let carrinho = await carrinho_model.find_carrinho_ativo (idUser)
+    let carrinho = await carrinhos_model.find_carrinho_ativo (usuario_id)
     let item = await itens_model.find_item(id)
 
     if (!carrinho) {
@@ -59,24 +87,24 @@ async function remover_item(idUser, id) {
 
     item = await itens_model.remove_item(id)
     let total = carrinho.total - total_item
-    carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
+    carrinho = await carrinhos_model.update_carrinho(carrinho.id, total)
     
     
 }
 
-async function finalizar_carrinho (idUser) {
-    let carrinho = await carrinho_model.find_carrinho_ativo (idUser)
+async function finish_car (usuario_id) {
+    let carrinho = await carrinhos_model.find_carrinho_ativo (usuario_id)
     
     if (!carrinho) {
         throw new AppError ('Carrinho não encontrado', 404)
     }
 
-    return carrinho = await carrinho_model.finish_carrinho(carrinho.id)
+    return carrinho = await carrinhos_model.finish_carrinho(carrinho.id)
 
 }
 
-async function procurar_carrinho (idUser) {
-    let carrinho = await carrinho_model.find_carrinho_ativo(idUser)
+async function find_car (usuario_id) {
+    let carrinho = await carrinhos_model.find_carrinho_ativo(usuario_id)
 
     if (!carrinho) {
         throw new AppError ('Carrinho não encontrado', 404)
@@ -85,8 +113,8 @@ async function procurar_carrinho (idUser) {
     return carrinho
 }
 
-async function mostrar_carrinho (idUser) {
-    let carrinho = await carrinho_model.list_carrinho(idUser)
+async function list_car (usuario_id) {
+    let carrinho = await carrinhos_model.list_carrinho(usuario_id)
 
     if (!carrinho.length) {
         throw new AppError ('Carrinho não encontrado', 404)
@@ -95,21 +123,21 @@ async function mostrar_carrinho (idUser) {
     return carrinho
 }
 
-async function mostrar_item (idUser, id) {
-    let carrinho = await carrinho_model.find_carrinho(id)
-    let user = idUser
+async function list_items (usuario_id, id) {
+    let carrinho = await carrinhos_model.find_carrinho(id)
+    let user = usuario_id
 
-    if( user !== carrinho.idUser) {
+    if( user !== carrinho.usuario_id) {
         throw new AppError ('Carrinho não econtrado', 404)
     } else {
-        carrinho = await carrinho_model.list_items(id)
+        carrinho = await carrinhos_model.list_items(id)
     }
         
     return carrinho
 }
 
-async function limpar_carrinho (idUser) {
-    let carrinho = await carrinho_model.find_carrinho_ativo(idUser)
+async function clear_car (usuario_id) {
+    let carrinho = await carrinhos_model.find_carrinho_ativo(usuario_id)
 
     if (!carrinho) {
         throw new AppError ('Carrinho não encontrado', 404)
@@ -118,30 +146,31 @@ async function limpar_carrinho (idUser) {
     await itens_model.clear_car(carrinho.id)
 
     const total = 0
-    carrinho = await carrinho_model.update_carrinho(carrinho.id, total)
-    const vazio = await carrinho_model.find_carrinho_ativo(idUser)
+    carrinho = await carrinhos_model.update_carrinho(carrinho.id, total)
+    const vazio = await carrinhos_model.find_carrinho_ativo(usuario_id)
     
     return vazio
 }
 
-async function remover_carrinho (idUser, id) {
-    let carrinho = await carrinho_model.find_carrinho(id)
-    let user = idUser
+async function remove_car (usuario_id, id) {
+    let carrinho = await carrinhos_model.find_carrinho(id)
+    let user = usuario_id
 
-    if (user !== carrinho.idUser) {
+    if (user !== carrinho.usuario_id) {
         throw new AppError ('Carrinho não encontrado', 404)
     } else {
-        carrinho = await carrinho_model.remove_carrinho(id)
+        carrinho = await carrinhos_model.remove_carrinho(id)
     }
    
 }
 module.exports = {
-    criar_item,
-    remover_item,
-    finalizar_carrinho,
-    procurar_carrinho,
-    mostrar_carrinho,
-    mostrar_item,
-    limpar_carrinho,
-    remover_carrinho
+    create_user,
+    create_items,
+    remove_items,
+    finish_car,
+    find_car,
+    list_car,
+    list_items,
+    clear_car,
+    remove_car
 }

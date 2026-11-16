@@ -1,10 +1,24 @@
 const service = require('../services/comprasService')
 
+async function crate_user (req,res) {
+    try {
+    const usuario = await service.create_user(req.body)
+    return res.status(201).json({usuario})
+        
 
+    } catch (error) {
+        if(error.statusCode) {
+            return res.status(error.statusCode).json({
+                erro: error.message
+            })
+        }
+        
+        return res.status(500).json({erro: error})
+    }
+}
 async function create_items (req,res) {
     try{
-        const idUser = req.headers["x-user-id"]
-        const item = await service.criar_item (idUser, req.body)
+        const item = await service.create_items (idUser, req.body)
         return res.status(201).json(item)
 
     } catch (error) {
@@ -25,7 +39,7 @@ async function remove_items (req,res) {
     try {
         const idUser = req.headers["x-user-id"]
         const idItem = req.params.id
-        const item = await service.remover_item(idUser, idItem)
+        const item = await service.remove_items(idUser, idItem)
         return res.status(200).json({status: 'o item foi removido com sucesso!'})
     } catch (error) {
 
@@ -44,7 +58,7 @@ async function remove_items (req,res) {
 async function finish_car (req, res) {
     try {
         const idUser = req.headers["x-user-id"]
-        const carrinho = await service.finalizar_carrinho(idUser)
+        const carrinho = await service.finish_car(idUser)
         return res.status(200).json(carrinho)
     } catch (error) {
 
@@ -63,7 +77,7 @@ async function finish_car (req, res) {
 async function find_car (req, res) {
     try {
         const idUser = req.headers["x-user-id"]
-        const carrinho = await service.procurar_carrinho(idUser)
+        const carrinho = await service.find_car(idUser)
         return res.status(200).json(carrinho)
 
     } catch (error) {
@@ -82,7 +96,7 @@ async function find_car (req, res) {
 async function list_car (req, res) {
     try {
         const idUser = req.headers["x-user-id"]
-        const carrinho = await service.mostrar_carrinho(idUser)
+        const carrinho = await service.list_car(idUser)
         return res.status(200).json(carrinho)
     } catch (error) {
 
@@ -102,7 +116,7 @@ async function list_items (req, res) {
     try {
         const idUser = req.headers["x-user-id"]
         const id = req.params.id
-        const carrinho = await service.mostrar_item(idUser, id)
+        const carrinho = await service.list_items(idUser, id)
         return res.status(200).json(carrinho)
     } catch (error) {
 
@@ -121,7 +135,7 @@ async function list_items (req, res) {
 async function clear_car (req, res) {
     try {
         const idUser = req.headers["x-user-id"]
-        const carrinho = await service.limpar_carrinho(idUser)
+        const carrinho = await service.clear_car(idUser)
         return res.status(200).json(carrinho)
 
     }catch (error) {
@@ -142,7 +156,7 @@ async function remove_car (req, res) {
     try {
         const id = req.params.id
         const idUser = req.headers["x-user-id"]
-        const carrinho = await service.remover_carrinho(idUser,id)
+        const carrinho = await service.remove_car(idUser,id)
         return res.status(200).json({message:'item removido com sucesso!'})
     } catch (error) {
 
@@ -159,6 +173,7 @@ async function remove_car (req, res) {
 }
 
 module.exports = {
+    crate_user,
     create_items,
     remove_items,
     finish_car,

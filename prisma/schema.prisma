@@ -13,15 +13,29 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model carrinho {
+model usuarios {
   id String @id @default(uuid())
-  idUser String
+  nome String
+  email String @unique
+  senha String 
+  login Boolean @default(false)
+
+  carrinhos carrinhos []
+}
+
+
+model carrinhos {
+  id String @id @default(uuid())
   status String @default("ativo")
   total Float @default(0)
   createdAt DateTime @default(now())
 
+  usuario_id String
+  usuarios usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
   itens itens_carrinho []
 }
+
 
 model itens_carrinho {
   id String @id @default(uuid())
@@ -30,5 +44,5 @@ model itens_carrinho {
   quantidade Int
 
   carrinho_id String
-  carrinho carrinho @relation(fields: [carrinho_id], references: [id], onDelete: Cascade)
+  carrinho carrinhos @relation(fields: [carrinho_id], references: [id], onDelete: Cascade)
 }
