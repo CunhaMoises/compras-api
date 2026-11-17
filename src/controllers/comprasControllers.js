@@ -1,5 +1,6 @@
 const service = require('../services/comprasService')
 
+
 async function crate_user (req,res) {
     try {
     const usuario = await service.create_user(req.body)
@@ -19,11 +20,21 @@ async function crate_user (req,res) {
 
 async function login (req,res) {
     try {
-        const usuario = await service.login(req.body)
+        const token = await service.login(req.body)
 
-        return res.status(200).json(usuario)
-    } catch (error) {
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 15 * 60 * 1000,
+        });
+
         
+
+
+        return res.status(200).json({message: "usuario logado!"})
+    } catch (error) {
+
         if(error.statusCode) {
             return res.status(error.statusCode).json({
                 erro: error.message
@@ -35,7 +46,9 @@ async function login (req,res) {
 
 async function create_items (req,res) {
     try{
-        const item = await service.create_items (idUser, req.body)
+        
+        const item = await service.create_items (req.usuario_id, req.body)
+
         return res.status(201).json(item)
 
     } catch (error) {
@@ -45,9 +58,11 @@ async function create_items (req,res) {
                 erro: error.message
             });
         }
-
+        console.log(error)
+        console.log('status: ', error.statusCode)
         return res.status(500).json({
-            erro: "Erro interno do servidor"
+            erro: "Erro interno do servidorr"
+            
         });
     }
 }

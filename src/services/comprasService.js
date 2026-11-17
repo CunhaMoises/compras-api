@@ -10,13 +10,14 @@ const itens_model = require('../models/itensModel')
 const carrinhos_model = require('../models/carrinhosModel')
 const usuarios_model = require('../models/usuariosModel')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const AppError = require('../errors/AppError')
 
 const TOTAL_CARRINHO_MAXIMO = 5
 
 async function create_user (data) {
     try {
-
+        // verifica os campos invalidos e vazios
         if(!data.nome?.trim() || !data.email?.trim() || !data.senha?.trim()) {
             throw new AppError('Preencha os campos corretamente!', 400)
         }
@@ -45,16 +46,21 @@ async function login (data) {
     const usuario = await usuarios_model.login(data.email)
 
     if(!usuario) {
-        throw new AppError('Usuario não encontrado!', 400)
+        throw new AppError('Usuario ou senha inválidos!', 400)
     }
 
+    // compara a senha digitada com a salva no banco
     const senha  = await bcrypt.compare(data.senha, usuario.senha)
 
     if(senha == false) {
         throw new AppError('Usuario ou senha inválidos!', 400)
     }
 
-    return usuario
+    const token = jwt.sign({id:usuario.id, nome:usuario.nome, email:usuario.email, login: usuario.login}, process.env.JWT_SECRET, { expiresIn: '15m'})
+
+
+
+    return token
 
 }
 
@@ -75,9 +81,17 @@ async function create_items (usuario_id, data) {
     if (!carrinho) {
         carrinho = await carrinhos_model.create_carrinho (usuario_id)
     }
+ 
     
+    
+    if(!data.nome?.trim() || !Number(data.preco) || !Number(data.quantidade)) {
+        throw new AppError('Preencha os campos corretamente!',400)
+    }
+
+
     const item = await itens_model.create_items(carrinho.id, data)
     let total = carrinho.total + (item.preco * item.quantidade)
+
 
     carrinho = await carrinhos_model.update_carrinho(carrinho.id, total)
 

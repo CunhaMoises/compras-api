@@ -16,11 +16,8 @@ async function login (email) {
     return await prisma.usuarios.findUnique({
         where: {
             email: email
-        },
-        select: {
-            email: true,
-            senha: true
         }
+       
     })
 }
 
