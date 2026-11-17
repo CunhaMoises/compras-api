@@ -56,7 +56,7 @@ async function login (data) {
         throw new AppError('Usuario ou senha inválidos!', 400)
     }
 
-    const token = jwt.sign({id:usuario.id, nome:usuario.nome, email:usuario.email, login: usuario.login}, process.env.JWT_SECRET, { expiresIn: '15m'})
+    const token = jwt.sign({id:usuario.id, nome:usuario.nome, email:usuario.email, login: usuario.login}, process.env.JWT_SECRET, { expiresIn: '120m'})
 
 
 
@@ -98,10 +98,23 @@ async function create_items (usuario_id, data) {
     return item
 }
 
-async function remove_items(usuario_id, id) {
+async function list_items (usuario_id, carrinho_id) {
+    let carrinho = await carrinhos_model.find_carrinho(carrinho_id)
+    let user = usuario_id
+
+    if( user !== carrinho.usuario_id) {
+        throw new AppError ('Carrinho não econtrado', 404)
+    } else {
+        carrinho = await carrinhos_model.list_items(carrinho_id)
+    }
+        
+    return carrinho
+}
+
+async function remove_items(usuario_id, item_id) {
 
     let carrinho = await carrinhos_model.find_carrinho_ativo (usuario_id)
-    let item = await itens_model.find_item(id)
+    let item = await itens_model.find_item(item_id)
 
     if (!carrinho) {
         throw new AppError ('Carrinho não encontrado', 404)
@@ -117,7 +130,7 @@ async function remove_items(usuario_id, id) {
         throw new AppError("Item não encontrado no carrinho", 404);
     }
 
-    item = await itens_model.remove_item(id)
+    item = await itens_model.remove_item(item_id)
     let total = carrinho.total - total_item
     carrinho = await carrinhos_model.update_carrinho(carrinho.id, total)
     
@@ -155,19 +168,6 @@ async function list_car (usuario_id) {
     return carrinho
 }
 
-async function list_items (usuario_id, id) {
-    let carrinho = await carrinhos_model.find_carrinho(id)
-    let user = usuario_id
-
-    if( user !== carrinho.usuario_id) {
-        throw new AppError ('Carrinho não econtrado', 404)
-    } else {
-        carrinho = await carrinhos_model.list_items(id)
-    }
-        
-    return carrinho
-}
-
 async function clear_car (usuario_id) {
     let carrinho = await carrinhos_model.find_carrinho_ativo(usuario_id)
 
@@ -184,14 +184,16 @@ async function clear_car (usuario_id) {
     return vazio
 }
 
-async function remove_car (usuario_id, id) {
-    let carrinho = await carrinhos_model.find_carrinho(id)
+async function remove_car (usuario_id, carrinho_id) {
+    let carrinho = await carrinhos_model.find_carrinho(carrinho_id)
     let user = usuario_id
 
     if (user !== carrinho.usuario_id) {
         throw new AppError ('Carrinho não encontrado', 404)
+    } else if(carrinho.status === 'ativo') {
+        throw new AppError('Você não pode apagar um carrinho ativo!', 400)
     } else {
-        carrinho = await carrinhos_model.remove_carrinho(id)
+        carrinho = await carrinhos_model.remove_carrinho(carrinho_id)
     }
    
 }

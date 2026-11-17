@@ -24,10 +24,10 @@ async function find_carrinho_ativo (usuario_id) {
 }
 
 // procurar carrinho
-async function find_carrinho (id) {
+async function find_carrinho (carrinho_id) {
     return await prisma.carrinhos.findUnique ( {
         where: {
-            id
+            id: carrinho_id
         }
     })
 }
@@ -69,10 +69,10 @@ async function list_carrinho (usuario_id) {
 }
 
 // listar item do carrinho
-async function list_items (id) {
+async function list_items (carrinho_id) {
     return await prisma.carrinhos.findUnique ({
         where: {
-            id
+            id: carrinho_id
         }, include: {
             itens: true
         }
@@ -80,10 +80,10 @@ async function list_items (id) {
 }
 
 // remover carrinho
-async function remove_carrinho(id) {
+async function remove_carrinho(carrinho_id) {
     return await prisma.carrinhos.delete ({
         where: {
-            id
+            id: carrinho_id
         }
     })
 }

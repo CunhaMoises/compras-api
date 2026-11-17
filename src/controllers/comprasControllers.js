@@ -26,7 +26,7 @@ async function login (req,res) {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 15 * 60 * 1000,
+            maxAge: 120 * 60 * 1000,
         });
 
         
@@ -67,11 +67,30 @@ async function create_items (req,res) {
     }
 }
 
+async function list_items (req, res) {
+    try {
+        const carrinho_id = req.params.id
+        const carrinho = await service.list_items(req.usuario_id, carrinho_id)
+        return res.status(200).json(carrinho)
+    } catch (error) {
+
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({
+                erro: error.message
+            });
+        }
+
+        return res.status(500).json({
+            erro: "Erro interno do servidor"
+        });
+    }
+}
+
 async function remove_items (req,res) {
     try {
-        const idUser = req.headers["x-user-id"]
+        
         const idItem = req.params.id
-        const item = await service.remove_items(idUser, idItem)
+        const item = await service.remove_items(req.usuario_id, idItem)
         return res.status(200).json({status: 'o item foi removido com sucesso!'})
     } catch (error) {
 
@@ -89,8 +108,7 @@ async function remove_items (req,res) {
 
 async function finish_car (req, res) {
     try {
-        const idUser = req.headers["x-user-id"]
-        const carrinho = await service.finish_car(idUser)
+        const carrinho = await service.finish_car(req.usuario_id)
         return res.status(200).json(carrinho)
     } catch (error) {
 
@@ -108,8 +126,7 @@ async function finish_car (req, res) {
 
 async function find_car (req, res) {
     try {
-        const idUser = req.headers["x-user-id"]
-        const carrinho = await service.find_car(idUser)
+        const carrinho = await service.find_car(req.usuario_id)
         return res.status(200).json(carrinho)
 
     } catch (error) {
@@ -127,28 +144,7 @@ async function find_car (req, res) {
 
 async function list_car (req, res) {
     try {
-        const idUser = req.headers["x-user-id"]
-        const carrinho = await service.list_car(idUser)
-        return res.status(200).json(carrinho)
-    } catch (error) {
-
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({
-                erro: error.message
-            });
-        }
-
-        return res.status(500).json({
-            erro: "Erro interno do servidor"
-        });
-    }
-}
-
-async function list_items (req, res) {
-    try {
-        const idUser = req.headers["x-user-id"]
-        const id = req.params.id
-        const carrinho = await service.list_items(idUser, id)
+        const carrinho = await service.list_car(req.usuario_id)
         return res.status(200).json(carrinho)
     } catch (error) {
 
@@ -166,8 +162,7 @@ async function list_items (req, res) {
 
 async function clear_car (req, res) {
     try {
-        const idUser = req.headers["x-user-id"]
-        const carrinho = await service.clear_car(idUser)
+        const carrinho = await service.clear_car(req.usuario_id)
         return res.status(200).json(carrinho)
 
     }catch (error) {
@@ -186,10 +181,10 @@ async function clear_car (req, res) {
 
 async function remove_car (req, res) {
     try {
-        const id = req.params.id
-        const idUser = req.headers["x-user-id"]
-        const carrinho = await service.remove_car(idUser,id)
-        return res.status(200).json({message:'item removido com sucesso!'})
+        const carrinho_id = req.params.id
+        const carrinho = await service.remove_car(req.usuario_id, carrinho_id)
+
+        return res.status(200).json({message:'carrinho removido com sucesso!'})
     } catch (error) {
 
         if (error.statusCode) {

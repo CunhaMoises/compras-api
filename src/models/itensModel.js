@@ -16,20 +16,20 @@ async function create_items (carrinho_id, data) {
 }
 
 // procura o item
-async function find_item (id) {
+async function find_item (item_id) {
     return await prisma.itens_carrinho.findFirst ({
         where: {
-            id  
+            id: item_id  
         } 
     })
 
 }
 
 // remove o item
-async function remove_item (id){
+async function remove_item (item_id){
     return await prisma.itens_carrinho.delete({
         where: {
-            id
+            id: item_id
         }
     })
 }
