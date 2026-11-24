@@ -11,7 +11,7 @@ async function crate_user (req,res) {
         res.cookie('token', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
+                sameSite: 'none',
                 maxAge: 120 * 60 * 1000,
             });
         return res.status(201).json({message: "usuario criado com sucesso!",
