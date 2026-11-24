@@ -14,6 +14,8 @@ function verifica_token (req, res, next) {
 
         req.usuario_id = dados.id
 
+        console.log('Usuário autenticado:', req.usuario_id)
+
 
         next()
 

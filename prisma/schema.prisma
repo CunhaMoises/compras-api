@@ -21,6 +21,18 @@ model usuarios {
   login Boolean @default(false)
 
   carrinhos carrinhos []
+  codigo verificacao_email?
+}
+
+model verificacao_email {
+  id String @id @default(uuid())
+  codigo String 
+  expiraEM DateTime
+  tentativas Int @default(0)
+  usadoEM DateTime?
+
+  usuario_id String @unique
+  usuarios usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
 }
 
 

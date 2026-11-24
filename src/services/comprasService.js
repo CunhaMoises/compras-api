@@ -8,61 +8,14 @@
 // exclui carrinho
 const itens_model = require('../models/itensModel')
 const carrinhos_model = require('../models/carrinhosModel')
-const usuarios_model = require('../models/usuariosModel')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+
+
 const AppError = require('../errors/AppError')
 
 const TOTAL_CARRINHO_MAXIMO = 5
 
-async function create_user (data) {
-    try {
-        // verifica os campos invalidos e vazios
-        if(!data.nome?.trim() || !data.email?.trim() || !data.senha?.trim()) {
-            throw new AppError('Preencha os campos corretamente!', 400)
-        }
-
-        const hash = await bcrypt.hash(data.senha, 10)
-        const usuario = await usuarios_model.crate_user(data, hash)
-
-        
-        const carrinho = await carrinhos_model.create_carrinho(usuario.id)
-        
-
-        return usuario
-
-    } catch (error) {
-        if(error.code == 'P2002') {
-            throw new AppError ('email ja cadastrado!', 400)
-        }
-        
-        throw error
-    }
-    
-}
-
-async function login (data) {
-    
-    const usuario = await usuarios_model.login(data.email)
-
-    if(!usuario) {
-        throw new AppError('Usuario ou senha inválidos!', 400)
-    }
-
-    // compara a senha digitada com a salva no banco
-    const senha  = await bcrypt.compare(data.senha, usuario.senha)
-
-    if(senha == false) {
-        throw new AppError('Usuario ou senha inválidos!', 400)
-    }
-
-    const token = jwt.sign({id:usuario.id, nome:usuario.nome, email:usuario.email, login: usuario.login}, process.env.JWT_SECRET, { expiresIn: '120m'})
 
 
-
-    return token
-
-}
 
 async function create_items (usuario_id, data) {
 
@@ -76,11 +29,17 @@ async function create_items (usuario_id, data) {
         
     }
 
+    console.log('Usuário recebido:', usuario_id)
+
     let carrinho = await carrinhos_model.find_carrinho_ativo (usuario_id)
+
+     console.log('Carrinho antes:', carrinho)
     
     if (!carrinho) {
         carrinho = await carrinhos_model.create_carrinho (usuario_id)
     }
+
+    console.log('Carrinho depois:', carrinho)
  
     
     
@@ -130,8 +89,8 @@ async function remove_items(usuario_id, item_id) {
         throw new AppError("Item não encontrado no carrinho", 404);
     }
 
-    item = await itens_model.remove_item(item_id)
     let total = carrinho.total - total_item
+    item = await itens_model.remove_item(item_id)
     carrinho = await carrinhos_model.update_carrinho(carrinho.id, total)
     
     
@@ -199,8 +158,6 @@ async function remove_car (usuario_id, carrinho_id) {
 }
 
 module.exports = {
-    login,
-    create_user,
     create_items,
     remove_items,
     finish_car,
