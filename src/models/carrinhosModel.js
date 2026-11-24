@@ -3,19 +3,19 @@ const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
 
 // criar o carrinho
-async function create_carrinho (idUser) {
-    return await prisma.carrinho.create({
+async function create_carrinho (usuario_id) {
+    return await prisma.carrinhos.create({
         data: {
-            idUser
+            usuario_id
         }
     })
 }
 
 // procurar carrinho ativo
-async function find_carrinho_ativo (idUser) {
-    return await prisma.carrinho.findFirst ( {
+async function find_carrinho_ativo (usuario_id) {
+    return await prisma.carrinhos.findFirst ( {
         where:{
-            idUser,
+            usuario_id,
             status: "ativo",
         }, include : {
             itens : true
@@ -24,17 +24,17 @@ async function find_carrinho_ativo (idUser) {
 }
 
 // procurar carrinho
-async function find_carrinho (id) {
-    return await prisma.carrinho.findUnique ( {
+async function find_carrinho (carrinho_id) {
+    return await prisma.carrinhos.findUnique ( {
         where: {
-            id
+            id: carrinho_id
         }
     })
 }
 
 // atualizar carrinho
 async function update_carrinho (id, total) {
-    return await prisma.carrinho.update({
+    return await prisma.carrinhos.update({
         where: {
             id
         },
@@ -46,7 +46,7 @@ async function update_carrinho (id, total) {
 
 // finalizar carrinho
 async function finish_carrinho (id){
-    return await prisma.carrinho.update ({
+    return await prisma.carrinhos.update ({
         where:{
             id,
             status: "ativo"
@@ -58,10 +58,10 @@ async function finish_carrinho (id){
 }
 
 // listar carrinho
-async function list_carrinho (idUser) {
-    return await prisma.carrinho.findMany ({
+async function list_carrinho (usuario_id) {
+    return await prisma.carrinhos.findMany ({
         where: {
-            idUser
+            usuario_id
         }, include : {
             itens: true
         }
@@ -69,10 +69,10 @@ async function list_carrinho (idUser) {
 }
 
 // listar item do carrinho
-async function list_items (id) {
-    return await prisma.carrinho.findUnique ({
+async function list_items (carrinho_id) {
+    return await prisma.carrinhos.findUnique ({
         where: {
-            id
+            id: carrinho_id
         }, include: {
             itens: true
         }
@@ -80,19 +80,19 @@ async function list_items (id) {
 }
 
 // remover carrinho
-async function remove_carrinho(id) {
-    return await prisma.carrinho.delete ({
+async function remove_carrinho(carrinho_id) {
+    return await prisma.carrinhos.delete ({
         where: {
-            id
+            id: carrinho_id
         }
     })
 }
 
 // conta quantos carrinhos tem
-async function count_carrinho(idUser){
-    return await prisma.carrinho.count({
+async function count_carrinho(usuario_id){
+    return await prisma.carrinhos.count({
         where: {
-            idUser,
+            usuario_id,
             status: "finalizado"
         }
     })

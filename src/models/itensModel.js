@@ -4,32 +4,32 @@ const prisma = new PrismaClient()
 
 
 // cria o item
-async function create_item (carrinho_id, data) {
+async function create_items (carrinho_id, data) {
     return await prisma.itens_carrinho.create({
         data: {
             nome: data.nome,
-            preco:data.preco,
-            quantidade:data.quantidade,
+            preco: Number(data.preco),
+            quantidade: Number(data.quantidade),
             carrinho_id
         }
     })
 }
 
 // procura o item
-async function find_item (id) {
+async function find_item (item_id) {
     return await prisma.itens_carrinho.findFirst ({
         where: {
-            id  
+            id: item_id  
         } 
     })
 
 }
 
 // remove o item
-async function remove_item (id){
+async function remove_item (item_id){
     return await prisma.itens_carrinho.delete({
         where: {
-            id
+            id: item_id
         }
     })
 }
@@ -43,7 +43,7 @@ async function clear_car (id) {
 }
 
 module.exports = {
-    create_item,
+    create_items,
     find_item,
     remove_item,
     clear_car
