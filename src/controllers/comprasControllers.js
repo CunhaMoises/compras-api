@@ -6,14 +6,9 @@ const usuariosService = require('../services/usuariosService')
 
 async function crate_user (req,res) {
     try {
-        const {token, usuario_email} = await usuariosService.create_user(req.body)
+        const usuario_email = await usuariosService.create_user(req.body)
         
-        res.cookie('token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'none',
-                maxAge: 120 * 60 * 1000,
-            });
+        
         return res.status(201).json({message: "usuario criado com sucesso!",
             usuario_email
         })
@@ -32,7 +27,14 @@ async function crate_user (req,res) {
 
 async function validate_code (req, res) {
     try {
-        const codigo = await usuariosService.validate_code(req.body)
+        const token = await usuariosService.validate_code(req.body)
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 120 * 60 * 1000,
+        });
         return res.status(200).json({message:"codigo valido, usuario cadastrado"})
     } catch (error) {
         if (error.statusCode) {
