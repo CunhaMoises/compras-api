@@ -12,8 +12,13 @@ const app = express ();
 
 app.use(express.json())
 
+const dominios = [
+    process.env.FRONT_END,
+    process.env.FRONT_END2
+]
+
 app.use(cors({
-    origin: process.env.FRONT_END,
+    origin: dominios,
     credentials: true
 }))
 
