@@ -8,7 +8,6 @@ const publicRoutes = require('./routes/publicRoutes.js')
 const autenticado = require('./middlewares/middlewares.js')
 
 
-
 const app = express ();
 
 app.use(express.json())

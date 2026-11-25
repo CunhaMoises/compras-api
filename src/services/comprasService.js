@@ -29,19 +29,11 @@ async function create_items (usuario_id, data) {
         
     }
 
-    console.log('Usuário recebido:', usuario_id)
-
     let carrinho = await carrinhos_model.find_carrinho_ativo (usuario_id)
-
-     console.log('Carrinho antes:', carrinho)
     
     if (!carrinho) {
         carrinho = await carrinhos_model.create_carrinho (usuario_id)
-    }
-
-    console.log('Carrinho depois:', carrinho)
- 
-    
+    }    
     
     if(!data.nome?.trim() || !Number(data.preco) || !Number(data.quantidade)) {
         throw new AppError('Preencha os campos corretamente!',400)
