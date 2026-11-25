@@ -38,9 +38,7 @@ async function create_user (data) {
         const verifica = await usuarios_model.email_verification(codigo.toString(), expiraCodigo,usuario.id)
 
         
-        
-
-        return usuario_email = usuario.email
+        return usuario.email
 
     } catch (error) {
         if(error.code == 'P2002') {
@@ -78,9 +76,21 @@ async function validate_code (data) {
         throw new AppError('Código expirado, gere outro por favor!', 400)
     }
 
+    console.log('1 - Código validado');
+
+    console.log('2 - Antes de atualizar verificação');
+
     const expiraEM = await usuarios_model.update_verification(data.codigo, limite, usuario.id, usadoEM)
+
+    console.log('3 - Verificação atualizada');
+
     const logado = await usuarios_model.updateLogin(usuario.id)
+
+    console.log('4 - Login atualizado');
+
     const token = jwt.sign({id:usuario.id, nome:usuario.nome, email:usuario.email, login: usuario.login}, process.env.JWT_SECRET, { expiresIn: '120m'})
+
+    console.log('5 - JWT gerado');
 
     return token
 

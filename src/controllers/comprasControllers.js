@@ -32,7 +32,7 @@ async function validate_code (req, res) {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none',
+            sameSite: 'lax',
             maxAge: 120 * 60 * 1000,
         });
         return res.status(200).json({message:"codigo valido, usuario cadastrado"})
